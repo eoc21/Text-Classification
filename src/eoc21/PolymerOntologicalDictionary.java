@@ -5,7 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
+import com.aliasi.chunk.Chunk;
+import com.aliasi.chunk.ChunkerEvaluator;
+import com.aliasi.chunk.Chunking;
+import com.aliasi.chunk.ChunkingEvaluation;
 import com.aliasi.dict.ApproxDictionaryChunker;
 import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.ExactDictionaryChunker;
@@ -35,8 +40,11 @@ public class PolymerOntologicalDictionary {
 	private ArrayList<String> polymerNamesList;
 	private ArrayList<String> conditionsList;
 	private ArrayList<String> standardsList;
+	private ArrayList<String> punctuationList;
+	private ArrayList<String> miscellaneousList;
 	private ApproxDictionaryChunker dictionaryChunker;
-	
+	private static String currentDir = System.getProperty("user.dir");
+
 	private PolymerOntologicalDictionary(){
 		
 	}
@@ -51,6 +59,8 @@ public class PolymerOntologicalDictionary {
 		String polymerNames = curDir+"/PolymerNames.txt";
 		String techniques = curDir+"/Techniques.txt";
 		String standards = curDir+"/Standards.txt";
+		String punctuation = curDir+"/Punctuation.txt";
+		String miscellaneous = curDir+"/Miscellaneous.txt";
 		chemicalEntityList = gettextdata(chemicalEntities);
 		propertyList = gettextdata(properties);
 		conditionsList = gettextdata(conditions);
@@ -59,7 +69,9 @@ public class PolymerOntologicalDictionary {
 		polymerNamesList = gettextdata(polymerNames);
 		techniqueList = gettextdata(techniques);
 		standardsList = gettextdata(standards);
-		dictionary = new TrieDictionary<String>();;
+		punctuationList = gettextdata(punctuation);
+		miscellaneousList = gettextdata(miscellaneous);
+		dictionary = new TrieDictionary<String>();
 		addToDictionary(chemicalEntityList,dictionary,"ChemicalEntity");
 		addToDictionary(propertyList,dictionary,"Property");
 		addToDictionary(conditionsList,dictionary,"Condition");
@@ -68,6 +80,8 @@ public class PolymerOntologicalDictionary {
 		addToDictionary(polymerNamesList,dictionary,"Polymer");
 		addToDictionary(techniqueList,dictionary,"Technique");
 		addToDictionary(standardsList,dictionary,"Standard");
+	//	addToDictionary(punctuationList,dictionary,"Punctuation");
+	//	addToDictionary(miscellaneousList,dictionary,"Miscellaneous");
 		return dictionary;
 	}
 	
@@ -92,17 +106,56 @@ public class PolymerOntologicalDictionary {
 	public ApproxDictionaryChunker createDictionaryChunker(){
 		WeightedEditDistance editDistance
         = new FixedWeightEditDistance(0,-1,-1,-1,Double.NaN);
-		double maxDistance = 2.0;
+		double maxDistance = 1.0;
 		TokenizerFactory tokenizerFactory = IndoEuropeanTokenizerFactory.INSTANCE;
 		dictionaryChunker = new ApproxDictionaryChunker(dictionary,tokenizerFactory,
                 editDistance,maxDistance);
 		return dictionaryChunker;
 	}
 	
+	
+	
 	public static void main(String[] args) throws IOException{
 		TrieDictionary<String> dict = PolymerOntologicalDictionary.INSTANCE.populateDictionary();
 		ApproxDictionaryChunker dictChunker =  PolymerOntologicalDictionary.INSTANCE.createDictionaryChunker();
-	
+	    ChunkerEvaluator evaluator = new ChunkerEvaluator(dictChunker);
+	    evaluator.setVerbose(true);	
+	    ArrayList<String>filteredTerms = new ArrayList<String>();
+	    String filterFile = PolymerOntologicalDictionary.currentDir+"/Filter.txt";
+	    BufferedReader ba = new BufferedReader(new FileReader(filterFile));
+	    String filteredTerm;
+	    while((filteredTerm = ba.readLine())!=null){
+	    	filteredTerms.add(filteredTerm);
+	    }
+	    String inputFile = PolymerOntologicalDictionary.currentDir+"/Training/PolymerPapers/PolymerTr0.txt";
+	    BufferedReader br = new BufferedReader(new FileReader(inputFile));
+	    String line;
+	    while((line = br.readLine()) != null ) {
+	    	System.out.println(line);
+	    Chunking chunking = dictChunker.chunk(line);
+	    CharSequence cs = chunking.charSequence();
+        Set<Chunk> chunkSet = chunking.chunkSet();
+        for (Chunk chunk : chunkSet) {
+            int start = chunk.start();
+            int end = chunk.end();
+            CharSequence str = cs.subSequence(start,end);
+            double distance = chunk.score();
+            String match = chunk.type();
+            //filter on size >3
+            if(str.length()>3){
+            	boolean filterIt = false;
+            	for(int i=0;i<filteredTerms.size();i++){
+            		if(str.equals(filteredTerms.get(i))){
+            			filterIt = true;
+            		}
+            	}
+            	if(filterIt != true){
+                    System.out.printf("%15s  %15s   %8.1f\n",
+                            str, match, distance);	            		
+            	}
+            }
+        }
+	    }
 	}
 	
 	
