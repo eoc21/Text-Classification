@@ -127,7 +127,7 @@ public class PolymerOntologicalDictionary {
 	    while((filteredTerm = ba.readLine())!=null){
 	    	filteredTerms.add(filteredTerm);
 	    }
-	    String inputFile = PolymerOntologicalDictionary.currentDir+"/Training/PolymerPapers/PolymerTr0.txt";
+	    String inputFile = PolymerOntologicalDictionary.currentDir+"/Training/PolymerPapers/PolymerTr1.txt";
 	    BufferedReader br = new BufferedReader(new FileReader(inputFile));
 	    String line;
 	    while((line = br.readLine()) != null ) {
