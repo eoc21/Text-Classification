@@ -47,7 +47,7 @@ public class ConditionalRandomFieldTagger {
 		this.cacheFeatures = cacheTheFeatures;
 		this.unSeenTransitions = transitions;
 		 reporter = Reporters.stdOut().setLevel(LogLevel.DEBUG);
-	//	 featureExtractor = (ChainCrfFeatureExtractor<String>) new SimpleChainCrfFeatureExtractor(null, null);
+//		 featureExtractor = (ChainCrfFeatureExtractor<String>) new SimpleChainCrfFeatureExtractor();
 		 Corpus v = processTrainingData("");	
     }
 	
@@ -124,7 +124,10 @@ public class ConditionalRandomFieldTagger {
 					tags.add(tokenAndTag[1]);
 				}
 				Tagging<String> tagging = new Tagging(tokens,tags);
-              
+				PolymerAbstractCorpus pacs = new PolymerAbstractCorpus();
+				ObjectHandler<Tagging<String>> handler = null;
+				pacs.visitTrain(handler,tagging);
+				
 			}}
 		return null;
 		

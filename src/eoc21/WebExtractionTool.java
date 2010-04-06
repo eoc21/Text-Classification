@@ -54,8 +54,24 @@ public class WebExtractionTool {
 	public static void main(String[] args) throws IllegalArgumentException, FeedException, IOException{
 		WebExtractionTool bbcNewsFeed = new WebExtractionTool("http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml");
 		WebExtractionTool polymerFeed = new WebExtractionTool("http://www3.interscience.wiley.com/rss/journal/36444");
+		WebExtractionTool polymerInternational = new WebExtractionTool("http://www3.interscience.wiley.com/rss/journal/5163");
+		WebExtractionTool biopolymers = new WebExtractionTool("http://jbc.sagepub.com/rss/current.xml");
 		bbcNewsFeed.processFeed("/Training/NewsText/NewsTr");
 		System.out.println("Polymer feed");
 		polymerFeed.processFeed("/Training/PolymerPapers/PolymerTr");
+		polymerInternational.processFeed("/Training/PolymerPapers/PolymerTrInternational");
+		biopolymers.processFeed("/Training/PolymerPapers/PolymerTrBio");
+		//Test documents from RSS feed.
+		WebExtractionTool timesNewsFeedWorld = new WebExtractionTool("http://feeds.timesonline.co.uk/c/32313/f/440158/index.rss");
+		timesNewsFeedWorld.processFeed("/Testing/NewsText/World");
+		WebExtractionTool newYorkTimesWorld =  new WebExtractionTool("http://feeds.nytimes.com/nyt/rss/World");
+		newYorkTimesWorld.processFeed("/Testing/NewsText/NYWorld");
+		WebExtractionTool newYorkTimesAfrica = new WebExtractionTool("http://feeds.nytimes.com/nyt/rss/Africa");
+		newYorkTimesAfrica.processFeed("/Testing/NewsText/NYAfrica");
+		WebExtractionTool polymersAdvancedTech = new WebExtractionTool("http://www3.interscience.wiley.com/rss/journal/5401");
+		polymersAdvancedTech.processFeed("/Testing/PolymerPapers/PolyAdvTechnology");
+		WebExtractionTool highPerformancePolymer = new WebExtractionTool("http://hip.sagepub.com/rss/current.xml");
+		highPerformancePolymer.processFeed("/Testing/PolymerPapers/HighPerformancePoly");
+		
 	}
 }

@@ -12,6 +12,7 @@ public class SimpleChainCrfFeatureExtractor<E> extends ChainCrfFeatures<E> {
 		super(tokens, tags);
 	}
 
+	
 	@Override
 	public Map<String, ? extends Number> edgeFeatures(int n, int k) {
 		return Collections
